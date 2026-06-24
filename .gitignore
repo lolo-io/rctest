@@ -1,0 +1,16 @@
+# Local-only, machine-specific — never share/commit
+local.properties
+
+# Contains the real Firebase API key — never share/commit.
+# Drop your own copy here before building (see README).
+app/google-services.json
+
+# Build outputs
+/build
+/app/build
+.gradle/
+
+# IDE
+.idea/
+.DS_Store
+*.iml
