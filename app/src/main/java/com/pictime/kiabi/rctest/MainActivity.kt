@@ -66,33 +66,27 @@ class MainActivity : AppCompatActivity() {
             .setMinimumFetchIntervalInSeconds(0) // debug
             .build()
         rc.setConfigSettingsAsync(settings)
-            .addOnCompleteListener { settingsTask ->
-                log("setConfigSettingsAsync done (success=${settingsTask.isSuccessful})")
+            .addOnCompleteListener { log("setConfigSettingsAsync done (success=${it.isSuccessful})") }
 
-                // Initial fetch (the "classic" path, different host from realtime).
-                rc.fetchAndActivate()
-                    .addOnCompleteListener { fetchTask ->
-                        if (fetchTask.isSuccessful) {
-                            log("fetchAndActivate OK (updated=${fetchTask.result}) keys=${rc.all.keys}")
-                        } else {
-                            log("fetchAndActivate FAILED: ${fetchTask.exception?.javaClass?.simpleName} ${fetchTask.exception?.message}")
-                        }
-
-                        log("Registering realtime listener...")
-                        val registration = rc.addOnConfigUpdateListener(object : ConfigUpdateListener {
-                            override fun onUpdate(configUpdate: ConfigUpdate) {
-                                log("onUpdate — updatedKeys=${configUpdate.updatedKeys}")
-                                rc.activate().addOnCompleteListener { log("   activate() success=${it.isSuccessful}") }
-                            }
-
-                            override fun onError(error: FirebaseRemoteConfigException) {
-                                log("onError — code=${error.code} : ${error.message}")
-                            }
-                        })
-                        log("Listener registered: $registration")
-                        log("Setup complete. >>> Publish a change in the Firebase console and wait here. <<<")
-                    }
+        log("Registering realtime listener...")
+        val registration = rc.addOnConfigUpdateListener(object : ConfigUpdateListener {
+            override fun onUpdate(configUpdate: ConfigUpdate) {
+                log("onUpdate — updatedKeys=${configUpdate.updatedKeys}")
+                rc.activate().addOnCompleteListener { log("   activate() success=${it.isSuccessful}") }
             }
+
+            override fun onError(error: FirebaseRemoteConfigException) {
+                log("onError — code=${error.code} : ${error.message}")
+            }
+        })
+        log("Listener registered: $registration")
+
+        // Initial fetch (the "classic" path, different host from realtime).
+        rc.fetchAndActivate()
+            .addOnSuccessListener { updated -> log("fetchAndActivate OK (updated=$updated) keys=${rc.all.keys}") }
+            .addOnFailureListener { log("fetchAndActivate FAILED: ${it.javaClass.simpleName} ${it.message}") }
+
+        log("Setup complete. >>> Publish a change in the Firebase console and wait here. <<<")
     }
 
     private fun log(msg: String) {
