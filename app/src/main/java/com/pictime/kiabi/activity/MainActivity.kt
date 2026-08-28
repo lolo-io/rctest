@@ -1,4 +1,4 @@
-package com.pictime.kiabi.rctest
+package com.pictime.kiabi.activity
 
 import android.graphics.Color
 import android.os.Bundle
@@ -68,23 +68,32 @@ class MainActivity : AppCompatActivity() {
         rc.setConfigSettingsAsync(settings)
             .addOnCompleteListener { log("setConfigSettingsAsync done (success=${it.isSuccessful})") }
 
-        log("Registering realtime listener...")
-        val registration = rc.addOnConfigUpdateListener(object : ConfigUpdateListener {
-            override fun onUpdate(configUpdate: ConfigUpdate) {
-                log("onUpdate — updatedKeys=${configUpdate.updatedKeys}")
-                rc.activate().addOnCompleteListener { log("   activate() success=${it.isSuccessful}") }
-            }
-
-            override fun onError(error: FirebaseRemoteConfigException) {
-                log("onError — code=${error.code} : ${error.message}")
-            }
-        })
-        log("Listener registered: $registration")
-
         // Initial fetch (the "classic" path, different host from realtime).
         rc.fetchAndActivate()
-            .addOnSuccessListener { updated -> log("fetchAndActivate OK (updated=$updated) keys=${rc.all.keys}") }
+            .addOnSuccessListener { updated -> {
+
+                log("fetchAndActivate OK (updated=$updated) keys=${rc.all.keys}") }
+
+                log("Registering realtime listener...")
+                val registration = rc.addOnConfigUpdateListener(object : ConfigUpdateListener {
+
+                    override fun onUpdate(configUpdate: ConfigUpdate) {
+                        log("onUpdate — updatedKeys=${configUpdate.updatedKeys}")
+                        rc.activate()
+                            .addOnCompleteListener { log("   activate() success=${it.isSuccessful}") }
+                    }
+
+                    override fun onError(error: FirebaseRemoteConfigException) {
+                        log("onError — code=${error.code} : ${error.message}")
+                    }
+                })
+                log("Listener registered: $registration")
+            }
             .addOnFailureListener { log("fetchAndActivate FAILED: ${it.javaClass.simpleName} ${it.message}") }
+
+
+
+
 
         log("Setup complete. >>> Publish a change in the Firebase console and wait here. <<<")
     }

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.pictime.kiabi.rctest"
+    namespace = "com.pictime.kiabi.activity"
     compileSdk = 36
 
     defaultConfig {
