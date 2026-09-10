@@ -1,4 +1,4 @@
-package com.pictime.kiabi.activity
+package com.pictime.kiabi.activity.staging
 
 import android.graphics.Color
 import android.os.Bundle

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.pictime.kiabi.activity"
+    namespace = "com.pictime.kiabi.activity.staging"
     compileSdk = 36
 
     defaultConfig {
